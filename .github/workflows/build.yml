@@ -1,0 +1,47 @@
+name: build-and-release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run tests
+        env:
+          SDL_VIDEODRIVER: dummy
+        run: python test_core.py
+
+      - name: Build exe
+        run: pyinstaller --onefile --noconsole --name dualsense-daslight-midi --hidden-import mido.backends.rtmidi app.py
+
+      - name: Smoke test exe exists
+        run: if (!(Test-Path dist/dualsense-daslight-midi.exe)) { exit 1 }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dualsense-daslight-midi
+          path: dist/dualsense-daslight-midi.exe
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: v1.0.${{ github.run_number }}
+          target_commitish: ${{ github.sha }}
+          files: dist/dualsense-daslight-midi.exe
+          make_latest: true
