@@ -69,6 +69,7 @@ class App:
                     if self.out is not None:
                         try:
                             self.out.send(msg)
+                            time.sleep(0.03)  # cooldown so Daslight isn't flooded
                         except Exception:
                             self.out = None
                             self.midi_var.set("MIDI: port lost, searching...")
