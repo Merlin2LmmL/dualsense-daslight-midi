@@ -1,1 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# Windows build artifacts
+*.exe
+*.spec
+build_windows.bat output dirs
+
+# Ignore generated docs
 CLAUDE.md
+
+# Temp / logs
+*.log
+tmp/
+!build_windows.bat
